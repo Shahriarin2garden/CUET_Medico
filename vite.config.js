@@ -14,4 +14,20 @@ export default defineConfig({
   optimizeDeps: {
     include: ['react-slick', 'slick-carousel'],
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+      },
+      '/all-doctors': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+      },
+      '/all-students': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+      },
+    },
+  },
 });

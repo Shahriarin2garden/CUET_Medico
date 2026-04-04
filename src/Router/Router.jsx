@@ -28,6 +28,9 @@ import PatientHistory from '../pages/doctor/PatientHistory';
 import DoctorSettings from '../pages/doctor/DoctorSettings';
 import ReportsPage from "../pages/ReportsPage";
 import PrescriptionPage from "../pages/PrescriptionPage";
+import MentalHealthAnalysis from "../pages/MentalHealthAnalysis";
+import MentalHealthScreening from "../pages/MentalHealthScreening";
+import ChatSession from "../pages/ChatSession";
 
 
 const router = createBrowserRouter([
@@ -73,6 +76,9 @@ const router = createBrowserRouter([
       { path: "/signup", element: <SignupForm /> },
       // { path: "/medical-history", element: <MedicalHistoryPage /> },
       { path: "/doctor-profile/:id", element: <DoctorProfile /> },
+      { path: "/mental-health-analysis", element: <MentalHealthAnalysis /> },
+      { path: "/mental-health-screening", element: <MentalHealthScreening /> },
+      { path: "/chat/:sessionId", element: <ChatSession /> },
       // { path: 'reports/:patientId', element: <ReportsPage /> },
       // { path: 'prescriptions/:appointmentId', element: <PrescriptionPage /> },
     ]

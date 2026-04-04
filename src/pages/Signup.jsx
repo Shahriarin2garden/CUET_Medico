@@ -20,6 +20,22 @@ const SignupForm = () => {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
             localStorage.setItem('user', JSON.stringify({ uid: user.uid, name, email, role }));
+
+            // Save to MongoDB so they appear in students/doctors lists
+            if (role === 'student') {
+                await fetch('/api/students', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, studentName: name, role }),
+                });
+            } else if (role === 'doctor') {
+                await fetch('/api/doctors', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, designation: 'General', role }),
+                });
+            }
+
             navigate('/home');
         } catch (err) {
             setError(err.message);

@@ -28,6 +28,7 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     await signOut(auth);
+    localStorage.removeItem("user");
     navigate("/login");
   };
 
@@ -35,10 +36,20 @@ const Navbar = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  // Get role-based dashboard path
+  const getDashboardPath = () => {
+    const userData = JSON.parse(localStorage.getItem("user") || "{}");
+    const role = userData.role || "student";
+    if (role === "admin") return "/dashmenu/dashboard";
+    if (role === "doctor") return "/dashmenu/doctor/my-patients";
+    return "/dashmenu/student";
+  };
+
   const navItems = [
     { path: "/home", title: "Home" },
     { path: "/appointments", title: "Appointments" },
     { path: "/doctors", title: "Doctors" },
+    { path: "/mental-health-analysis", title: "AI Analysis" },
     { path: "/blog", title: "Blog" },
     { path: "/contact", title: "Contact" },
   ];
@@ -61,11 +72,30 @@ const Navbar = () => {
               </NavLink>
             </li>
           ))}
-          <li>
-            <Link to="/login" className="bg-blue text-white p-2 hover:bg-purple-900 rounded-lg">
-              Log In
-            </Link>
-          </li>
+
+          {user ? (
+            <>
+              <li className="text-base text-primary">
+                <NavLink to={getDashboardPath()} className={({ isActive }) => (isActive ? "active" : "")}>
+                  Dashboard
+                </NavLink>
+              </li>
+              <li>
+                <button
+                  onClick={handleLogout}
+                  className="bg-red-500 text-white px-3 py-1.5 hover:bg-red-600 rounded-lg text-sm"
+                >
+                  Logout
+                </button>
+              </li>
+            </>
+          ) : (
+            <li>
+              <Link to="/login" className="bg-blue text-white p-2 hover:bg-purple-900 rounded-lg">
+                Log In
+              </Link>
+            </li>
+          )}
         </ul>
 
         <div className="md:hidden block">
@@ -88,9 +118,20 @@ const Navbar = () => {
               </NavLink>
             </li>
           ))}
-          <li className="text-base bg-black text-white py-1">
-            <Link to="/login" className="text-black bg-blue">Log In</Link>
-          </li>
+          {user ? (
+            <>
+              <li className="text-base text-white py-1">
+                <NavLink to={getDashboardPath()}>Dashboard</NavLink>
+              </li>
+              <li className="text-base text-white py-1">
+                <button onClick={handleLogout} className="text-red-400">Logout</button>
+              </li>
+            </>
+          ) : (
+            <li className="text-base bg-black text-white py-1">
+              <Link to="/login" className="text-black bg-blue">Log In</Link>
+            </li>
+          )}
         </ul>
       </div>
     </header>
