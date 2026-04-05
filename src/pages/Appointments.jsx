@@ -95,7 +95,7 @@ const Appointments = () => {
       <h1 className="text-3xl font-bold mb-8">Book an Appointment</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-1 gap-8">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+        <div className="bg-white border rounded-lg shadow-sm p-8">
           <h2 className="text-xl font-semibold mb-4">Appointment Details</h2>
           <form className="space-y-4" onSubmit={handleSubmit}>
             {/* Student Information */}
@@ -108,7 +108,7 @@ const Appointments = () => {
                     type="text"
                     value={studentInfo.studentName}
                     onChange={(e) => setStudentInfo({ ...studentInfo, studentName: e.target.value })}
-                    className="w-full p-2 border rounded-md"
+                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm bg-white"
                     required
                   />
                 </div>
@@ -118,7 +118,7 @@ const Appointments = () => {
                     type="text"
                     value={studentInfo.studentID}
                     onChange={(e) => setStudentInfo({ ...studentInfo, studentID: e.target.value })}
-                    className="w-full p-2 border rounded-md"
+                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm bg-white"
                   />
                 </div>
                 <div>
@@ -127,7 +127,7 @@ const Appointments = () => {
                     type="text"
                     value={studentInfo.department}
                     onChange={(e) => setStudentInfo({ ...studentInfo, department: e.target.value })}
-                    className="w-full p-2 border rounded-md"
+                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm bg-white"
                   />
                 </div>
                 <div>
@@ -136,7 +136,7 @@ const Appointments = () => {
                     type="text"
                     value={studentInfo.hall}
                     onChange={(e) => setStudentInfo({ ...studentInfo, hall: e.target.value })}
-                    className="w-full p-2 border rounded-md"
+                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm bg-white"
                   />
                 </div>
                 <div>
@@ -145,7 +145,7 @@ const Appointments = () => {
                     type="text"
                     value={studentInfo.batchNo}
                     onChange={(e) => setStudentInfo({ ...studentInfo, batchNo: e.target.value })}
-                    className="w-full p-2 border rounded-md"
+                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm bg-white"
                   />
                 </div>
                 <div>
@@ -154,7 +154,7 @@ const Appointments = () => {
                     type="email"
                     value={studentInfo.email}
                     onChange={(e) => setStudentInfo({ ...studentInfo, email: e.target.value })}
-                    className="w-full p-2 border rounded-md"
+                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm bg-white"
                     required
                   />
                 </div>
@@ -173,7 +173,7 @@ const Appointments = () => {
                     const selected = doctors.find(doc => doc._id === e.target.value);
                     setSelectedDoctor(selected || null);
                   }}
-                  className="w-full p-2 border rounded-md"
+                  className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm bg-white"
                   required
                 >
                   <option value="">Choose a doctor</option>
@@ -188,7 +188,7 @@ const Appointments = () => {
 
             {/* Doctor Information (Display after selecting) */}
             {selectedDoctor && (
-              <div className="bg-gray-50 p-4 rounded-md shadow-md mt-4">
+              <div className="bg-slate-50 border p-4 rounded-lg shadow-sm mt-4">
                 <h3 className="font-semibold mb-2">Doctor Information</h3>
                 <div className="flex items-center space-x-4">
                   {selectedDoctor.image ? (
@@ -219,7 +219,7 @@ const Appointments = () => {
                   type="date"
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
-                  className="w-full p-2 border rounded-md pl-10"
+                  className="w-full py-2 pr-3 pl-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm bg-white"
                   required
                 />
                 <Calendar className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
@@ -232,7 +232,7 @@ const Appointments = () => {
                 <select
                   value={selectedTime}
                   onChange={(e) => setSelectedTime(e.target.value)}
-                  className="w-full p-2 border rounded-md pl-10"
+                  className="w-full py-2 pr-3 pl-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm bg-white"
                   required
                 >
                   <option value="">Choose a time</option>
@@ -246,7 +246,7 @@ const Appointments = () => {
 
             <button
               type="submit"
-              className="w-full bg-primary text-white py-2 rounded-md hover:bg-primary/90 transition-colors"
+              className="w-full bg-primary text-primary-foreground py-2.5 rounded-md hover:bg-primary/90 transition-colors font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
             >
               Book Appointment
             </button>

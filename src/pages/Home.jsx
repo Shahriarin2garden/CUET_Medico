@@ -1,21 +1,11 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  FaPhone,
-  FaCalendarAlt,
-  FaHeartbeat,
-  FaStar,
-  FaArrowRight,
-  FaBrain,
-  FaCheckCircle,
-  FaLightbulb,
-  FaShieldAlt,
-  FaRunning,
-  FaMoon,
-  FaUsers,
-  FaBookOpen,
-} from "react-icons/fa";
-import { MdLocalHospital, MdEmergency, MdVaccines } from "react-icons/md";
+import { 
+  Frown, Activity, Moon, Brain, CheckCircle2, 
+  Users, BookOpen, Shield, Lightbulb, Star, 
+  Hospital, Stethoscope, HeartPulse, Calendar, 
+  Syringe, Phone, ArrowRight 
+} from "lucide-react";
 import Footer from "../components/Footer";
 
 // ── Mental Health Check — Data ────────────────────────────────────────────────
@@ -23,7 +13,7 @@ const CATEGORIES = [
   {
     id: "mood",
     label: "Mood",
-    emoji: "😔",
+    icon: <Frown className="w-5 h-5" />,
     color: "bg-blue-500",
     lightColor: "bg-blue-50",
     borderColor: "border-blue-300",
@@ -37,11 +27,11 @@ const CATEGORIES = [
   {
     id: "anxiety",
     label: "Anxiety",
-    emoji: "😰",
-    color: "bg-purple-500",
-    lightColor: "bg-purple-50",
-    borderColor: "border-purple-300",
-    textColor: "text-purple-600",
+    icon: <Activity className="w-5 h-5" />,
+    color: "bg-slate-700",
+    lightColor: "bg-slate-50",
+    borderColor: "border-slate-200",
+    textColor: "text-slate-700",
     questions: [
       "How often have you felt nervous, anxious, or on edge?",
       "How often have you felt unable to stop or control worrying?",
@@ -51,11 +41,11 @@ const CATEGORIES = [
   {
     id: "sleep",
     label: "Sleep & Energy",
-    emoji: "😴",
-    color: "bg-indigo-500",
-    lightColor: "bg-indigo-50",
-    borderColor: "border-indigo-300",
-    textColor: "text-indigo-600",
+    icon: <Moon className="w-5 h-5" />,
+    color: "bg-slate-700",
+    lightColor: "bg-slate-50",
+    borderColor: "border-slate-200",
+    textColor: "text-slate-700",
     questions: [
       "How often have you had trouble falling or staying asleep, or slept too much?",
       "How often have you felt tired or had little energy throughout the day?",
@@ -64,11 +54,11 @@ const CATEGORIES = [
   {
     id: "focus",
     label: "Focus & Daily Life",
-    emoji: "🧠",
-    color: "bg-pink-500",
-    lightColor: "bg-pink-50",
-    borderColor: "border-pink-300",
-    textColor: "text-pink-600",
+    icon: <Brain className="w-5 h-5" />,
+    color: "bg-cyan-600",
+    lightColor: "bg-cyan-50",
+    borderColor: "border-cyan-200",
+    textColor: "text-cyan-700",
     questions: [
       "How often have you had difficulty concentrating on studying or daily tasks?",
       "How often have you withdrawn from friends, family, or activities you care about?",
@@ -89,12 +79,12 @@ const ALL_QUESTIONS = CATEGORIES.flatMap((cat) =>
 const MAX_SCORE = ALL_QUESTIONS.length * 3;
 
 const TIPS = [
-  { icon: <FaRunning />, title: "Stay Active", desc: "Even a 20-min walk daily can significantly reduce anxiety and low mood." },
-  { icon: <FaMoon />, title: "Prioritize Sleep", desc: "Aim for 7–8 hours. A consistent sleep schedule restores mental energy." },
-  { icon: <FaUsers />, title: "Stay Connected", desc: "Reach out to a friend or family member. Social bonds protect mental health." },
-  { icon: <FaBookOpen />, title: "Mindful Breaks", desc: "Take short breaks while studying. 5 minutes of deep breathing reduces stress." },
-  { icon: <FaShieldAlt />, title: "Set Boundaries", desc: "It is okay to say no. Protecting your time reduces overwhelm." },
-  { icon: <FaLightbulb />, title: "Seek Support", desc: "Talking to a counselor is a sign of strength, not weakness." },
+  { icon: <Activity className="w-5 h-5 shrink-0 mt-0.5 text-primary" />, title: "Stay Active", desc: "Even a 20-min walk daily can significantly reduce anxiety and low mood." },
+  { icon: <Moon className="w-5 h-5 shrink-0 mt-0.5 text-primary" />, title: "Prioritize Sleep", desc: "Aim for 7–8 hours. A consistent sleep schedule restores mental energy." },
+  { icon: <Users className="w-5 h-5 shrink-0 mt-0.5 text-primary" />, title: "Stay Connected", desc: "Reach out to a friend or family member. Social bonds protect mental health." },
+  { icon: <BookOpen className="w-5 h-5 shrink-0 mt-0.5 text-primary" />, title: "Mindful Breaks", desc: "Take short breaks while studying. 5 minutes of deep breathing reduces stress." },
+  { icon: <Shield className="w-5 h-5 shrink-0 mt-0.5 text-primary" />, title: "Set Boundaries", desc: "It is okay to say no. Protecting your time reduces overwhelm." },
+  { icon: <Lightbulb className="w-5 h-5 shrink-0 mt-0.5 text-primary" />, title: "Seek Support", desc: "Talking to a counselor is a sign of strength, not weakness." },
 ];
 
 const getResult = (score, categoryScores) => {
@@ -178,7 +168,7 @@ const MentalHealthCheck = () => {
         {/* Header */}
         <div className="text-center mb-10">
           <span className="inline-flex items-center gap-2 bg-purple-500 bg-opacity-20 text-purple-300 text-sm font-semibold px-4 py-1 rounded-full mb-4 border border-purple-500 border-opacity-30">
-            <FaBrain /> Mental Health Check
+            <Brain /> Mental Health Check
           </span>
           <h2 className="text-4xl font-extrabold text-white mb-3">How Are You Feeling?</h2>
           <p className="text-slate-400 max-w-xl mx-auto">
@@ -202,7 +192,7 @@ const MentalHealthCheck = () => {
               <div className="flex flex-wrap justify-center gap-3 mb-10">
                 {CATEGORIES.map((cat) => (
                   <span key={cat.id} className={`${cat.color} text-white text-sm font-semibold px-4 py-1.5 rounded-full flex items-center gap-1.5`}>
-                    {cat.emoji} {cat.label}
+                    {cat.icon} {cat.label}
                   </span>
                 ))}
               </div>
@@ -273,9 +263,9 @@ const MentalHealthCheck = () => {
                         : "border-white border-opacity-10 text-slate-300 hover:border-purple-400 hover:bg-white hover:bg-opacity-5"
                       }`}
                   >
-                    <span className="text-xl">{opt.emoji}</span>
+                    <span className="text-xl">{}</span>
                     <span className="flex-1">{opt.label}</span>
-                    {selected === opt.score && <FaCheckCircle className="text-purple-400 shrink-0" />}
+                    {selected === opt.score && <CheckCircle2 className="text-purple-400 shrink-0" />}
                   </button>
                 ))}
               </div>
@@ -326,7 +316,7 @@ const MentalHealthCheck = () => {
                   {result.categoryScores.map((cat) => (
                     <div key={cat.id} className={`rounded-xl p-4 border ${cat.lightColor} ${cat.borderColor} bg-opacity-10`}>
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="text-lg">{cat.emoji}</span>
+                        <span className="text-lg">{cat.icon}</span>
                         <span className={`text-sm font-bold ${cat.textColor}`}>{cat.label}</span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-1.5">
@@ -342,7 +332,7 @@ const MentalHealthCheck = () => {
               <div className={`border-2 rounded-2xl p-5 mb-5 ${result.bg}`}>
                 <p className="text-gray-700 mb-3">{result.message}</p>
                 <div className="flex items-start gap-2">
-                  <FaCheckCircle className={`mt-0.5 shrink-0 ${result.color}`} />
+                  <CheckCircle2 className={`mt-0.5 shrink-0 ${result.color}`} />
                   <p className={`font-semibold text-sm ${result.color}`}>{result.advice}</p>
                 </div>
               </div>
@@ -350,7 +340,7 @@ const MentalHealthCheck = () => {
               {/* Self-help tips */}
               <div className="mb-6">
                 <h4 className="text-white font-bold mb-3 text-sm uppercase tracking-wide flex items-center gap-2">
-                  <FaLightbulb className="text-yellow-400" /> Self-Care Tips
+                  <Lightbulb className="w-5 h-5 shrink-0 mt-0.5 text-primary" /> Self-Care Tips
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {TIPS.map((tip, i) => (
@@ -424,12 +414,12 @@ const Home = () => {
   ];
 
   const services = [
-    { icon: <MdLocalHospital className="text-3xl" />, title: "Primary Care", desc: "Comprehensive healthcare for students & staff", color: "bg-blue-500" },
-    { icon: <MdEmergency className="text-3xl" />, title: "Emergency 24/7", desc: "Round-the-clock emergency medical support", color: "bg-red-500" },
-    { icon: <FaHeartbeat className="text-3xl" />, title: "Counseling", desc: "Mental health support & psychological care", color: "bg-purple-500" },
-    { icon: <FaCalendarAlt className="text-3xl" />, title: "Health Checkups", desc: "Regular preventive health screenings", color: "bg-green-500" },
-    { icon: <MdVaccines className="text-3xl" />, title: "Vaccination", desc: "Immunization drives & vaccine programs", color: "bg-yellow-500" },
-    { icon: <FaPhone className="text-3xl" />, title: "Ambulance", desc: "On-call ambulance for emergencies", color: "bg-orange-500" },
+    { icon: <Hospital className="w-8 h-8" />, title: "Primary Care", desc: "Comprehensive healthcare for students & staff", color: "bg-blue-500" },
+    { icon: <Stethoscope className="w-8 h-8" />, title: "Emergency 24/7", desc: "Round-the-clock emergency medical support", color: "bg-red-500" },
+    { icon: <HeartPulse className="w-8 h-8" />, title: "Counseling", desc: "Mental health support & psychological care", color: "bg-slate-700" },
+    { icon: <Calendar className="w-8 h-8" />, title: "Health Checkups", desc: "Regular preventive health screenings", color: "bg-green-500" },
+    { icon: <Syringe className="w-8 h-8" />, title: "Vaccination", desc: "Immunization drives & vaccine programs", color: "bg-yellow-500" },
+    { icon: <Phone className="w-8 h-8" />, title: "Ambulance", desc: "On-call ambulance for emergencies", color: "bg-orange-500" },
   ];
 
   const stats = [
@@ -456,32 +446,30 @@ const Home = () => {
     <div className="font-sans">
 
       {/* ── Hero ── */}
-      <section className="relative min-h-[88vh] flex items-center bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 text-white overflow-hidden">
-        <div className="absolute top-[-80px] right-[-80px] w-96 h-96 bg-white opacity-5 rounded-full pointer-events-none" />
-        <div className="absolute bottom-[-60px] left-[-60px] w-72 h-72 bg-white opacity-5 rounded-full pointer-events-none" />
-
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center py-20 w-full">
+      <section className="relative min-h-[88vh] flex items-center bg-slate-50 border-b overflow-hidden">
+        <div className="absolute top-0 right-0 w-1/2 h-full bg-primary/5 rounded-l-full blur-3xl opacity-50 pointer-events-none" />
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center py-20 w-full relative z-10">
           <div>
-            <span className="inline-block bg-white bg-opacity-20 text-white text-sm font-semibold px-4 py-1 rounded-full mb-6">
+            <span className="inline-block bg-primary/10 text-primary text-sm font-semibold px-4 py-1 rounded-full mb-6">
               CUET Campus Healthcare
             </span>
             <h1 className="text-5xl md:text-6xl font-extrabold leading-tight mb-6">
               Your Health,<br />
               <span className="text-yellow-300">Our Priority</span>
             </h1>
-            <p className="text-xl text-blue-100 mb-8 leading-relaxed">
+            <p className="text-xl text-slate-600 mb-8 leading-relaxed max-w-lg">
               Modern healthcare facilities dedicated to the CUET community — from primary care to mental health support, we are here for you.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link
                 to="/appointmentform"
-                className="bg-white text-blue-600 px-7 py-3 rounded-full font-bold shadow-lg hover:bg-yellow-300 hover:text-blue-800 transition-colors"
+                className="bg-primary text-primary-foreground px-7 py-3 rounded-full font-bold shadow-md hover:bg-primary/90 transition-colors"
               >
                 Book Appointment
               </Link>
               <Link
                 to="/doctors"
-                className="border-2 border-white text-white px-7 py-3 rounded-full font-bold hover:bg-white hover:text-blue-600 transition-colors"
+                className="border border-slate-300 text-slate-700 bg-white px-7 py-3 rounded-full font-bold hover:bg-slate-50 transition-colors"
               >
                 Meet Our Doctors
               </Link>
@@ -491,8 +479,8 @@ const Home = () => {
           <div className="grid grid-cols-2 gap-4">
             {stats.map((s, i) => (
               <div key={i} className="bg-white bg-opacity-10 backdrop-blur-sm rounded-2xl p-6 text-center border border-white border-opacity-20">
-                <div className="text-4xl font-extrabold text-yellow-300 mb-1">{s.value}</div>
-                <div className="text-blue-100 text-sm font-medium">{s.label}</div>
+                <div className="text-4xl font-extrabold text-primary mb-1">{s.value}</div>
+                <div className="text-slate-600 text-sm font-medium">{s.label}</div>
               </div>
             ))}
           </div>
@@ -530,7 +518,7 @@ const Home = () => {
               <h2 className="text-3xl font-extrabold text-gray-800">Available Doctors</h2>
             </div>
             <Link to="/doctors" className="text-blue-600 font-semibold flex items-center gap-2 hover:gap-3 transition-all">
-              View All <FaArrowRight />
+              View All <ArrowRight />
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -564,7 +552,7 @@ const Home = () => {
             {testimonials.map((t, i) => (
               <div key={i} className="bg-gray-50 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex mb-3">
-                  {[...Array(t.rating)].map((_, j) => <FaStar key={j} className="text-yellow-400 mr-0.5" />)}
+                  {[...Array(t.rating)].map((_, j) => <Star key={j} className="text-yellow-400 mr-0.5" />)}
                 </div>
                 <p className="text-gray-600 italic mb-4">"{t.text}"</p>
                 <p className="font-bold text-gray-800">{t.name}</p>
@@ -599,7 +587,7 @@ const Home = () => {
             <h2 className="text-3xl font-extrabold mb-3">Medical Emergency?</h2>
             <p className="text-red-100 mb-6">Our emergency team is available around the clock. Do not wait — call us immediately.</p>
             <div className="flex items-center gap-4 bg-white bg-opacity-20 rounded-xl px-5 py-4">
-              <FaPhone className="text-yellow-300 text-2xl animate-pulse shrink-0" />
+              <Phone className="text-yellow-300 text-2xl animate-pulse shrink-0" />
               <div>
                 <p className="text-xs text-red-200 font-medium">Emergency Hotline</p>
                 <p className="text-2xl font-extrabold">+880 123 456 789</p>

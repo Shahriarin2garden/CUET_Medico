@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FaStar, FaCalendarAlt, FaPhoneAlt, FaEnvelope, FaSearch } from 'react-icons/fa';
+import { Star, Calendar, Phone, Mail, Search } from 'lucide-react';
 
 const Doctors = () => {
     const [doctors, setDoctors] = useState([]);
@@ -32,7 +32,7 @@ const Doctors = () => {
     );
 
     return (
-        <div className="bg-gradient-to-r from-blue-100 via-blue-200 to-white min-h-screen">
+        <div className="bg-slate-50 min-h-screen">
             {/* Hero Section */}
             <section
                 className="h-screen flex items-center justify-center relative bg-cover bg-center"
@@ -40,7 +40,7 @@ const Doctors = () => {
                     backgroundImage: "url('https://as1.ftcdn.net/v2/jpg/01/38/63/26/1000_F_138632656_V6qMgqGkROC606StfhSOXgbGRw62R04n.jpg')",
                 }}
             >
-                <div className="absolute inset-0 bg-blue-600 bg-opacity-40"></div>
+                <div className="absolute inset-0 bg-primary/60"></div>
                 <div className="flex items-center justify-between w-full max-w-screen-lg mx-auto px-6 relative z-10">
                     <div className="text-center md:text-left md:w-1/2 -ml-10">
                         <h1 className="text-5xl font-bold mb-4 text-white">Meet Your Healthcare Provider</h1>
@@ -49,7 +49,7 @@ const Doctors = () => {
                         </p>
                         <p className="text-sm mb-8 text-gray-300">Our experts are available for consultations today. Book your appointment now!</p>
                         <div className="space-x-4">
-                            <Link to="/appointments" className="inline-block bg-white text-blue-600 px-6 py-3 rounded-md shadow-lg hover:shadow-xl hover:bg-gray-100 animate-pulse">
+                            <Link to="/appointments" className="inline-block bg-white text-primary px-6 py-3 rounded-md font-semibold border shadow-sm hover:bg-slate-50 transition-colors">
                                 Book an Appointment
                             </Link>
                         </div>
@@ -68,7 +68,7 @@ const Doctors = () => {
             <section className="py-12">
                 <div className="text-center mb-8 py-8 px-4">
                     <h2 className="text-4xl font-bold mb-4">Find the Best Doctors</h2>
-                    <p className="text-lg text-teal-800">
+                    <p className="text-lg text-slate-600">
                         Use the filters to find the best healthcare provider for your needs
                     </p>
                 </div>
@@ -116,41 +116,41 @@ const Doctors = () => {
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto px-6">
                         {filteredDoctors.map((doctor, i) => (
-                            <div key={doctor._id || i} className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+                            <div key={doctor._id || i} className="bg-white p-6 rounded-lg border shadow-sm hover:shadow-md transition-shadow duration-300">
                                 <div className="flex flex-col items-center">
                                     {doctor.image ? (
                                         <img src={doctor.image} alt={doctor.name} className="w-24 h-24 rounded-full mb-4 object-cover" />
                                     ) : (
-                                        <div className="w-24 h-24 rounded-full mb-4 bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-3xl">
+                                        <div className="w-24 h-24 rounded-full mb-4 bg-primary/10 flex items-center justify-center text-primary font-bold text-3xl">
                                             {(doctor.name || 'D')[0]}
                                         </div>
                                     )}
                                     <h3 className="text-xl font-semibold mb-1">{doctor.name}</h3>
-                                    <p className="text-sm text-purple-600 font-medium mb-1">{doctor.designation}</p>
+                                    <p className="text-sm text-primary font-medium mb-1">{doctor.designation}</p>
                                     <p className="text-sm text-gray-600 mb-2">{doctor.specialization}</p>
                                     {doctor.rating && (
                                         <div className="flex items-center mb-2">
-                                            <FaStar className="text-yellow-400" />
+                                            <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
                                             <span className="ml-1 text-sm">{doctor.rating} Stars</span>
                                         </div>
                                     )}
                                     <p className="text-sm text-gray-500 mb-1">
-                                        <FaCalendarAlt className="inline-block mr-1" />
+                                        <Calendar className="w-4 h-4 inline-block mr-1 text-slate-500" />
                                         {doctor.available !== false ? 'Available' : 'Currently Unavailable'}
                                     </p>
                                     {doctor.phone && (
                                         <p className="text-xs text-gray-400">
-                                            <FaPhoneAlt className="inline-block mr-1" /> {doctor.phone}
+                                            <Phone className="w-3 h-3 inline-block mr-1 text-slate-400" /> {doctor.phone}
                                         </p>
                                     )}
                                     {doctor.email && (
                                         <p className="text-xs text-gray-400 mb-3">
-                                            <FaEnvelope className="inline-block mr-1" /> {doctor.email}
+                                            <Mail className="w-3 h-3 inline-block mr-1 text-slate-400" /> {doctor.email}
                                         </p>
                                     )}
                                     <Link
                                         to={`/doctor-profile/${doctor._id}`}
-                                        className="bg-blue-500 text-white py-2 px-6 rounded-full hover:bg-blue-600 transition-all duration-300"
+                                        className="bg-primary text-primary-foreground py-2 px-6 rounded-md font-medium shadow-sm hover:bg-primary/90 transition-colors"
                                     >
                                         View Profile
                                     </Link>
