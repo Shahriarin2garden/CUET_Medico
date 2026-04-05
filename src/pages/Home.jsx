@@ -455,7 +455,7 @@ const Home = () => {
             </span>
             <h1 className="text-5xl md:text-6xl font-extrabold leading-tight mb-6">
               Your Health,<br />
-              <span className="text-yellow-300">Our Priority</span>
+              <span className="text-primary">Our Priority</span>
             </h1>
             <p className="text-xl text-slate-600 mb-8 leading-relaxed max-w-lg">
               Modern healthcare facilities dedicated to the CUET community — from primary care to mental health support, we are here for you.
