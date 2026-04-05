@@ -105,14 +105,18 @@ function generateRecommendation(screeningData) {
     optionalMlSummary = `ML Text Analysis detected signs of ${mlPrediction} with ${mlConfidence} certainty based on free-text input.`;
   }
 
+  const mentalStateLabels = Array.from(labels);
+
   return {
-    labels: Array.from(labels),
+    mental_state_labels: mentalStateLabels,
+    labels: mentalStateLabels,
     severity,
     urgencyWindow,
     recommendedDoctorType,
     rationale,
     optionalMlSummary,
-    crisisGuidance
+    crisisGuidance,
+    disclaimer: "This is screening-based guidance, not a diagnosis. Please consult a qualified clinician for clinical assessment.",
   };
 }
 

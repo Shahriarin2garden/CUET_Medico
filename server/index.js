@@ -11,23 +11,25 @@ const { generateRecommendation } = require('./utils/recommendationEngine');
 
 const app = express();
 const port = process.env.PORT || 5000;
+const allowedOrigin = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
 
 // Create HTTP server and attach Socket.io
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: allowedOrigin,
     methods: ["GET", "POST"],
     credentials: true,
   },
 });
 
 const corOptions = {
-    origin: "http://localhost:5173",
+    origin: allowedOrigin,
     methods: "GET, POST, PUT, DELETE, PATCH, HEAD",
     credentials: true
 };
 
+app.disable('x-powered-by');
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cors(corOptions));
@@ -93,10 +95,59 @@ async function connectDB() {
       }
     });
 
+    // Generate recommendation using direct payload or existing screening record
+    app.post('/api/recommendation/screening', async (req, res) => {
+      try {
+        const { screeningId, persist, ...payload } = req.body || {};
+
+        let screeningData = payload;
+        let resolvedScreeningId = null;
+
+        if (screeningId) {
+          if (!ObjectId.isValid(screeningId)) {
+            return res.status(400).json({ error: "Invalid screeningId" });
+          }
+
+          const existing = await screeningCollection.findOne({ _id: new ObjectId(screeningId) });
+          if (!existing) {
+            return res.status(404).json({ error: "Screening not found" });
+          }
+
+          // Merge DB record with optional request overrides.
+          screeningData = { ...existing, ...payload };
+          resolvedScreeningId = screeningId;
+        }
+
+        const recommendation = generateRecommendation(screeningData);
+
+        let persisted = false;
+        if (resolvedScreeningId && persist !== false) {
+          await screeningCollection.updateOne(
+            { _id: new ObjectId(resolvedScreeningId) },
+            {
+              $set: {
+                recommendation,
+                recommendationUpdatedAt: new Date(),
+              },
+            }
+          );
+          persisted = true;
+        }
+
+        res.json({
+          recommendation,
+          screeningId: resolvedScreeningId,
+          persisted,
+        });
+      } catch (error) {
+        console.error("Recommendation error:", error);
+        res.status(500).json({ error: "Failed to generate recommendation" });
+      }
+    });
+
     // Post a new appointment
     app.post('/api/appointmentform', async (req, res) => {
         const body = req.body;
-        console.log('Body:', body);
         body.createdAt = new Date();
         const result = await appointmentCollection.insertOne(body);
         if (result.insertedId) {
@@ -115,7 +166,6 @@ async function connectDB() {
     // Post a new doctor
     app.post('/api/doctors', async (req, res) => {
         const body = req.body;
-        console.log('Body:', body);
         body.createdAt = new Date();
         const result = await doctorsCollection.insertOne(body);
         if (result.insertedId) {
@@ -128,7 +178,6 @@ async function connectDB() {
     // Post a new student
     app.post('/api/students', async (req, res) => {
         const body = req.body;
-        console.log('Body:', body);
         body.createdAt = new Date();
         const result = await studentCollection.insertOne(body);
         if (result.insertedId) {
@@ -332,18 +381,6 @@ async function connectDB() {
 }
 
 connectDB();
-
-// ── Recommendation Engine Route ──
-app.post('/api/recommendation/screening', async (req, res) => {
-  try {
-    const screeningData = req.body;
-    const recommendation = generateRecommendation(screeningData);
-    res.json(recommendation);
-  } catch (error) {
-    console.error("Recommendation error:", error);
-    res.status(500).json({ error: "Failed to generate recommendation" });
-  }
-});
 
 // ── ML Service Proxy Routes (Flask on port 5001) ──
 // These are outside connectDB() so they work even if MongoDB is down

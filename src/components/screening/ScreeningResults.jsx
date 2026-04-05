@@ -105,8 +105,8 @@ const ScreeningResults = ({ data, onSave }) => {
         body: JSON.stringify(screeningPayload),
       });
       if (recRes.ok) {
-        const recommendation = await recRes.json();
-        screeningPayload.recommendation = recommendation;
+        const recData = await recRes.json();
+        screeningPayload.recommendation = recData?.recommendation || recData;
       }
     } catch (error) {
       console.error("Failed to fetch recommendation:", error);

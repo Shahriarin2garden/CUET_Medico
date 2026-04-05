@@ -12,6 +12,11 @@ node_modules/
 # environment variables
 .env
 .env.*
+*.env
+*.local
+!.env.example
+.envrc
+.secrets
 
 # debug logs
 npm-debug.log*
@@ -39,6 +44,8 @@ ml-service/*.pkl
 
 # misc
 *.pem
+*.key
+*.crt
 *.tsbuildinfo
 .vercel
 Docs/
