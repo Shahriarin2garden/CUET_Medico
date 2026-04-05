@@ -80,7 +80,8 @@ const ScreeningResults = ({ data, onSave }) => {
 
   const handleSave = async () => {
     setSaving(true);
-    await onSave({
+    
+    const screeningPayload = {
       moodColorScore: moodColor,
       emotionWordScore: emotionWords,
       reactionTimeScore: reactionTime,
@@ -95,7 +96,23 @@ const ScreeningResults = ({ data, onSave }) => {
       mlExplanation: mlResult?.explanation,
       overallRiskLevel: risk.level,
       compositeScore: risk.pct,
-    });
+    };
+
+    try {
+      const recRes = await fetch('/api/recommendation/screening', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(screeningPayload),
+      });
+      if (recRes.ok) {
+        const recommendation = await recRes.json();
+        screeningPayload.recommendation = recommendation;
+      }
+    } catch (error) {
+      console.error("Failed to fetch recommendation:", error);
+    }
+
+    await onSave(screeningPayload);
     setSaving(false);
     setSaved(true);
   };

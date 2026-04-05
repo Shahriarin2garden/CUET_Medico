@@ -6,6 +6,8 @@ const http = require('http');
 const { Server } = require('socket.io');
 require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') });
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const { generateRecommendation } = require('./utils/recommendationEngine');
+
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -330,6 +332,18 @@ async function connectDB() {
 }
 
 connectDB();
+
+// ── Recommendation Engine Route ──
+app.post('/api/recommendation/screening', async (req, res) => {
+  try {
+    const screeningData = req.body;
+    const recommendation = generateRecommendation(screeningData);
+    res.json(recommendation);
+  } catch (error) {
+    console.error("Recommendation error:", error);
+    res.status(500).json({ error: "Failed to generate recommendation" });
+  }
+});
 
 // ── ML Service Proxy Routes (Flask on port 5001) ──
 // These are outside connectDB() so they work even if MongoDB is down
