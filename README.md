@@ -114,12 +114,13 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 - **Role-based dashboards** — Separate views for Admin, Doctor, and Student with Recharts analytics
 - **Appointment booking** — Students select a doctor, date, and time slot
 - **Real-time chat** — Socket.io powered doctor-patient messaging
-- **Mental health screening** — Interactive pre-appointment assessment with:
-  - Mood Color Picker (color psychology analysis)
-  - Emotion Word Cloud (weighted emotion selection)
-  - Reaction Time Test (cognitive response measurement)
-  - Memory Pattern Game (working memory assessment)
-  - PHQ-9/GAD-7 clinical quiz
+- **Mental health screening** — 10-round interactive, game-based pre-appointment assessment featuring:
+  - **Round 1 (Mood)**: Mood Color Picker & Mood Mixer (color psychology & emotional potion blending)
+  - **Round 2 (Emotions)**: Emotion Word Cloud & Feeling Sorter (Tinder-style swipe emotion mechanics)
+  - **Round 3 (Reflex & Attention)**: Reaction Time Test & Focus Catcher (cognitive response and sustained attention)
+  - **Round 4 (Memory)**: Memory Pattern Game & Pathfinder Maze (working and spatial memory)
+  - **Round 5 (Assessment)**: Free Text Quiz & Scenario Cards (gamified clinical daily-life scenarios)
+  - **Results**: Dynamic Actionable Insights (immediate self-care & appointment recommendations based on composite risk)
 - **AI text analysis** — LIME-based explainable classification of mental health text
 - **3D visualization** — Interactive word importance plot with Three.js
 - **Dashboard analytics** — Charts for appointments, screenings, and statistics
