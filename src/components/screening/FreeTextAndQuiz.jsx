@@ -96,6 +96,7 @@ const FreeTextAndQuiz = ({ onComplete }) => {
 
   const progress = Math.round((currentQ / ALL_QUESTIONS.length) * 100);
   const currentCat = CATEGORIES.find((c) => c.id === ALL_QUESTIONS[currentQ]?.categoryId);
+  const experiencePoints = answers.length * 100;
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -103,12 +104,13 @@ const FreeTextAndQuiz = ({ onComplete }) => {
         <div>
           <div className="text-center mb-6">
             <div className="inline-flex items-center gap-2 bg-indigo-100 text-indigo-700 px-4 py-1.5 rounded-full text-sm font-medium mb-4">
-              📋 Clinical Questionnaire
+              🎮 Round 5: Clinical Questionnaire Mode
             </div>
             <h2 className="text-2xl font-bold text-gray-800 mb-2">
-              Mental Health Assessment
+              Mental Health Assessment Mission
             </h2>
             <p className="text-gray-500 text-sm">Based on PHQ-9 & GAD-7 clinical scales</p>
+            <p className="text-xs text-gray-400 mt-1">XP earned: {experiencePoints}</p>
           </div>
 
           {/* Progress */}
@@ -130,6 +132,7 @@ const FreeTextAndQuiz = ({ onComplete }) => {
             <p className="text-lg font-medium text-gray-800 mb-6">
               {ALL_QUESTIONS[currentQ].question}
             </p>
+            <p className="text-xs text-gray-400 mb-4">Checkpoint: answer carefully to unlock your final insight board.</p>
             <div className="space-y-3">
               {OPTIONS.map((opt) => (
                 <button
@@ -154,7 +157,7 @@ const FreeTextAndQuiz = ({ onComplete }) => {
         <div>
           <div className="text-center mb-6">
             <div className="inline-flex items-center gap-2 bg-teal-100 text-teal-700 px-4 py-1.5 rounded-full text-sm font-medium mb-4">
-              ✍️ Express Yourself
+              🎮 Story Mode: Express Yourself
             </div>
             <h2 className="text-2xl font-bold text-gray-800 mb-2">
               In your own words...

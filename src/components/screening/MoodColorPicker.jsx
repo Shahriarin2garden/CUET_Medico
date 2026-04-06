@@ -75,6 +75,7 @@ const MoodColorPicker = ({ onComplete }) => {
   const [phase, setPhase] = useState('current'); // 'current' | 'desired' | 'done'
   const [currentColor, setCurrentColor] = useState(null);
   const [desiredColor, setDesiredColor] = useState(null);
+  const missionProgress = phase === 'current' ? 50 : phase === 'desired' ? 85 : 100;
 
   const handlePick = (color) => {
     if (phase === 'current') {
@@ -90,11 +91,13 @@ const MoodColorPicker = ({ onComplete }) => {
     } else if (phase === 'desired' && desiredColor) {
       setPhase('done');
       const result = computeScore(currentColor, desiredColor);
-      onComplete({
-        currentColor,
-        desiredColor,
-        ...result,
-      });
+      setTimeout(() => {
+        onComplete({
+          currentColor,
+          desiredColor,
+          ...result,
+        });
+      }, 700);
     }
   };
 
@@ -104,17 +107,23 @@ const MoodColorPicker = ({ onComplete }) => {
     <div className="max-w-2xl mx-auto">
       <div className="text-center mb-8">
         <div className="inline-flex items-center gap-2 bg-purple-100 text-purple-700 px-4 py-1.5 rounded-full text-sm font-medium mb-4">
-          🎨 Mood Color Activity
+          🎮 Round 1: Mood Color Activity
+        </div>
+        <div className="w-full max-w-sm mx-auto bg-slate-200 rounded-full h-2 mb-4">
+          <div
+            className="h-2 rounded-full bg-purple-500 transition-all duration-500"
+            style={{ width: `${missionProgress}%` }}
+          />
         </div>
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
           {phase === 'current'
-            ? 'Pick the color that represents how you feel RIGHT NOW'
+            ? 'Mission 1: Pick the color that matches how you feel RIGHT NOW'
             : phase === 'desired'
-            ? 'Now pick the color that represents how you WANT to feel'
-            : 'Color Analysis Complete!'}
+            ? 'Mission 2: Pick the color that represents how you WANT to feel'
+            : 'Round Complete! Color Analysis Ready'}
         </h2>
         <p className="text-gray-500 text-sm">
-          {phase !== 'done' ? 'Trust your instinct — there are no right or wrong answers' : ''}
+          {phase !== 'done' ? 'Trust your instinct. Every pick gives insight points.' : 'Preparing next activity...'}
         </p>
       </div>
 

@@ -71,11 +71,12 @@ const ReactionTimeTest = ({ onComplete }) => {
 
     if (phase === 'roundResult') {
       const nextRound = round + 1;
+      const mergedTimes = times.length > round ? [...times] : [...times, currentTime];
       if (nextRound >= TOTAL_ROUNDS) {
         setPhase('done');
-        const result = computeScore([...times], falseStarts);
+        const result = computeScore(mergedTimes, falseStarts);
         onComplete({
-          times: [...times],
+          times: mergedTimes,
           falseStarts,
           ...result,
         });
@@ -102,7 +103,7 @@ const ReactionTimeTest = ({ onComplete }) => {
   return (
     <div className="max-w-xl mx-auto text-center">
       <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-4 py-1.5 rounded-full text-sm font-medium mb-4">
-        ⚡ Reaction Time Test
+        🎮 Round 3: Reaction Time Test
       </div>
 
       {phase === 'intro' && (
@@ -114,7 +115,7 @@ const ReactionTimeTest = ({ onComplete }) => {
             When the circle turns <span className="text-green-500 font-bold">GREEN</span>, click as fast as you can!
           </p>
           <p className="text-gray-400 text-sm mb-6">
-            Don't click when it's <span className="text-red-500 font-bold">RED</span> — that's a false start.
+            Avoid clicking on <span className="text-red-500 font-bold">RED</span> to preserve your reflex streak.
           </p>
           <button
             onClick={handleClick}
@@ -129,6 +130,9 @@ const ReactionTimeTest = ({ onComplete }) => {
         <div>
           <p className="text-sm text-gray-500 mb-4">
             Round {round + 1} of {TOTAL_ROUNDS}
+          </p>
+          <p className="text-xs text-gray-400 mb-3">
+            Current false starts: {falseStarts}
           </p>
 
           {/* Progress dots */}

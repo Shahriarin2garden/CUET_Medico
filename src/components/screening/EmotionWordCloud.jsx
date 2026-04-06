@@ -43,6 +43,7 @@ function getWordSize(index) {
 
 const EmotionWordCloud = ({ onComplete }) => {
   const [selected, setSelected] = useState([]);
+  const [submitting, setSubmitting] = useState(false);
   const MAX_SELECT = 10;
 
   const toggleWord = (word) => {
@@ -56,30 +57,36 @@ const EmotionWordCloud = ({ onComplete }) => {
   };
 
   const handleDone = () => {
+    setSubmitting(true);
     const selectedWords = WORDS.filter((w) => selected.includes(w.text));
     const totalWeight = selectedWords.reduce((sum, w) => sum + w.weight, 0);
     // Map weight to 0-10 score (higher = worse)
     // Weight range: worst = -30 (all negative), best = +30 (all positive)
     // Normalize: -30..+30 → 10..0
     const normalized = Math.max(0, Math.min(10, Math.round(5 - totalWeight / 3)));
-    onComplete({
-      selectedWords: selected,
-      totalWeight,
-      score: normalized,
-    });
+    setTimeout(() => {
+      onComplete({
+        selectedWords: selected,
+        totalWeight,
+        score: normalized,
+      });
+    }, 550);
   };
 
   return (
     <div className="max-w-3xl mx-auto">
       <div className="text-center mb-8">
         <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-1.5 rounded-full text-sm font-medium mb-4">
-          💭 Emotion Word Cloud
+          🎮 Round 2: Emotion Word Cloud
         </div>
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
-          Tap the words that describe how you feel
+          Tap the words that describe your emotional state
         </h2>
         <p className="text-gray-500 text-sm">
-          Select up to {MAX_SELECT} words — {selected.length}/{MAX_SELECT} selected
+          Mission progress: {selected.length}/{MAX_SELECT} emotion cards selected
+        </p>
+        <p className="text-xs text-gray-400 mt-1">
+          Combo bonus unlocked at 5+ words
         </p>
       </div>
 
@@ -129,10 +136,10 @@ const EmotionWordCloud = ({ onComplete }) => {
       <div className="text-center">
         <button
           onClick={handleDone}
-          disabled={selected.length === 0}
+          disabled={selected.length === 0 || submitting}
           className="bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold disabled:opacity-40 hover:bg-blue-500 transition"
         >
-          Continue →
+          {submitting ? 'Scoring Round...' : 'Continue →'}
         </button>
       </div>
     </div>

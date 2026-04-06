@@ -38,6 +38,9 @@ const MemoryPatternGame = ({ onComplete }) => {
   const lastClickRef = useRef(null);
   const timeoutRef = useRef(null);
 
+  const levelLabel =
+    sequenceLength <= 4 ? 'Starter' : sequenceLength <= 5 ? 'Advanced' : sequenceLength <= 6 ? 'Expert' : 'Master';
+
   const showSequence = useCallback((seq) => {
     setPhase('showing');
     let i = 0;
@@ -158,7 +161,7 @@ const MemoryPatternGame = ({ onComplete }) => {
   return (
     <div className="max-w-lg mx-auto text-center">
       <div className="inline-flex items-center gap-2 bg-yellow-100 text-yellow-700 px-4 py-1.5 rounded-full text-sm font-medium mb-4">
-        🧠 Memory Pattern Game
+        🎮 Round 4: Memory Pattern Game
       </div>
 
       {phase === 'intro' && (
@@ -195,6 +198,7 @@ const MemoryPatternGame = ({ onComplete }) => {
                 : '❌ Wrong!'}
             </span>
           </div>
+          <p className="text-xs text-gray-400 mb-3">Difficulty tier: {levelLabel}</p>
 
           {/* Progress */}
           <div className="flex justify-center gap-1 mb-4">

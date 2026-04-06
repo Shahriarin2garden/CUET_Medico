@@ -1,15 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
   RadialBarChart, RadialBar,
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, Legend,
+  Cell,
 } from 'recharts';
-import { FaSave, FaSpinner, FaBrain, FaGamepad, FaClock, FaPuzzlePiece, FaClipboardList, FaPalette } from 'react-icons/fa';
+import { FaSave, FaSpinner, FaBrain, FaGamepad, FaClock, FaPuzzlePiece, FaClipboardList, FaPalette, FaFilePdf } from 'react-icons/fa';
 import LimeColorGradient from '../ml-analysis/LimeColorGradient';
 import WordPlot3D from '../ml-analysis/WordPlot3D';
 import PredictionResult from '../ml-analysis/PredictionResult';
-import { RISK_COLORS, CLASS_COLORS } from '../../constants/chartColors';
+import { RISK_COLORS } from '../../constants/chartColors';
+import { useToast } from '../ui/ToastProvider';
+import { exportScreeningToPdf } from './ScreeningPDFExport';
 
 function computeOverallRisk(scores) {
   // Weighted composite: quiz(40%), words(20%), color(15%), reaction(12.5%), memory(12.5%)
@@ -27,11 +29,15 @@ function computeOverallRisk(scores) {
   return { level: 'Critical', color: RISK_COLORS.Critical, pct: Math.round(composite * 100) };
 }
 
-const ScreeningResults = ({ data, onSave }) => {
+const ScreeningResults = ({ data, onSave, userInfo, onUniversityIdChange }) => {
   const [mlResult, setMlResult] = useState(null);
   const [mlLoading, setMlLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [recommendationText, setRecommendationText] = useState('');
+  const reportRef = useRef(null);
+  const { showToast } = useToast();
 
   const { moodColor, emotionWords, reactionTime, memoryPattern, quiz } = data;
 
@@ -107,21 +113,89 @@ const ScreeningResults = ({ data, onSave }) => {
       if (recRes.ok) {
         const recData = await recRes.json();
         screeningPayload.recommendation = recData?.recommendation || recData;
+        setRecommendationText(screeningPayload.recommendation);
       }
     } catch (error) {
       console.error("Failed to fetch recommendation:", error);
     }
 
-    await onSave(screeningPayload);
+    const ok = await onSave(screeningPayload);
     setSaving(false);
-    setSaved(true);
+    if (ok) {
+      setSaved(true);
+      showToast({
+        title: 'Screening saved',
+        description: 'Your screening result has been saved and shared with your doctor.',
+        type: 'success',
+      });
+    }
+  };
+
+  const handleExport = async () => {
+    if (!userInfo?.universityId?.trim()) {
+      showToast({
+        title: 'University ID required',
+        description: 'Please enter your university ID before exporting the PDF report.',
+        type: 'warning',
+        duration: 3600,
+      });
+      return;
+    }
+
+    try {
+      setExporting(true);
+      await exportScreeningToPdf({
+        reportElement: reportRef.current,
+        userInfo,
+        data,
+        risk,
+        recommendation: recommendationText,
+      });
+      showToast({
+        title: 'PDF exported',
+        description: 'Your screening report has been downloaded successfully.',
+        type: 'success',
+      });
+    } catch (error) {
+      console.error('Export failed:', error);
+      showToast({
+        title: 'Export failed',
+        description: 'Could not generate the PDF report. Please try again.',
+        type: 'warning',
+      });
+    } finally {
+      setExporting(false);
+    }
   };
 
   return (
-    <div className="max-w-5xl mx-auto">
+    <div className="max-w-5xl mx-auto" ref={reportRef} id="screening-report-root">
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold text-gray-800 mb-2">Your Screening Results</h2>
         <p className="text-gray-500">Comprehensive mental health assessment summary</p>
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-sm p-5 mb-6">
+        <h3 className="text-sm font-semibold text-gray-700 mb-3">Report Identity</h3>
+        <div className="grid md:grid-cols-3 gap-3 text-sm">
+          <div className="rounded-lg bg-slate-50 p-3">
+            <p className="text-xs text-slate-500">Name</p>
+            <p className="font-medium text-slate-700">{userInfo?.name || 'N/A'}</p>
+          </div>
+          <div className="rounded-lg bg-slate-50 p-3">
+            <p className="text-xs text-slate-500">Email</p>
+            <p className="font-medium text-slate-700 break-all">{userInfo?.email || 'N/A'}</p>
+          </div>
+          <label className="rounded-lg bg-slate-50 p-3 block">
+            <p className="text-xs text-slate-500 mb-1">University ID</p>
+            <input
+              value={userInfo?.universityId || ''}
+              onChange={(event) => onUniversityIdChange(event.target.value)}
+              placeholder="Enter university ID"
+              className="w-full rounded-md border border-slate-200 px-2 py-1.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-300"
+            />
+          </label>
+        </div>
       </div>
 
       {/* Overall Risk Badge */}
@@ -303,20 +377,24 @@ const ScreeningResults = ({ data, onSave }) => {
 
       {/* Save Button */}
       <div className="text-center mt-8 mb-12">
-        {saved ? (
-          <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-6 py-3 rounded-xl font-semibold">
-            ✓ Saved & Shared with Doctor
-          </div>
-        ) : (
+        <div className="inline-flex flex-wrap items-center justify-center gap-3">
           <button
             onClick={handleSave}
             disabled={saving}
             className="bg-purple-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-purple-500 transition disabled:opacity-50 inline-flex items-center gap-2"
           >
             {saving ? <FaSpinner className="animate-spin" /> : <FaSave />}
-            Save & Share with Doctor
+            {saved ? 'Saved' : 'Save & Share with Doctor'}
           </button>
-        )}
+          <button
+            onClick={handleExport}
+            disabled={exporting}
+            className="bg-rose-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-rose-500 transition disabled:opacity-50 inline-flex items-center gap-2"
+          >
+            {exporting ? <FaSpinner className="animate-spin" /> : <FaFilePdf />}
+            Export PDF
+          </button>
+        </div>
       </div>
     </div>
   );
