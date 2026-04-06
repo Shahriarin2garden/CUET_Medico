@@ -35,7 +35,7 @@ function shuffle(arr) {
 }
 
 const FeelingSorter = ({ onComplete }) => {
-  const [cards] = useState(() => shuffle(EMOTION_CARDS));
+  const [cards] = useState(() => shuffle(EMOTION_CARDS).slice(0, 10));
   const [currentIndex, setCurrentIndex] = useState(0);
   const [backpack, setBackpack] = useState([]);
   const [discarded, setDiscarded] = useState([]);
@@ -141,7 +141,7 @@ const FeelingSorter = ({ onComplete }) => {
           <div className="bg-white rounded-2xl shadow-lg p-8 mb-6 max-w-sm mx-auto">
             <div className="text-5xl mb-4">🎒</div>
             <p className="text-gray-600 text-sm mb-3">
-              You'll see 20 emotion cards. For each one, decide:
+              You'll see 10 emotion cards. For each one, decide:
             </p>
             <div className="flex justify-center gap-6 mb-4">
               <div className="text-center">

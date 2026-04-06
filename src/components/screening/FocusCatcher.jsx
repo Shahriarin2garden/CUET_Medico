@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const GAME_DURATION = 30; // seconds
+const GAME_DURATION = 15; // seconds
 const SPAWN_INTERVAL = 800; // ms between spawns
 const FALL_DURATION = 3500; // ms for object to fall
 const BASKET_WIDTH = 80;

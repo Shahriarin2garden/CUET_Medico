@@ -32,7 +32,7 @@ const OPTIONS = [
 ];
 
 function computeScenarioScore(answers) {
-  const maxScore = SCENARIOS.length * 3;
+  const maxScore = answers.length * 3;
   let total = 0;
 
   answers.forEach((ans) => {
@@ -85,6 +85,7 @@ function computeScenarioScore(answers) {
 }
 
 const ScenarioCards = ({ onComplete }) => {
+  const [cards] = useState(() => [...SCENARIOS].sort(() => Math.random() - 0.5).slice(0, 10));
   const [phase, setPhase] = useState('intro'); // intro | swiping | done
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState([]);
@@ -92,8 +93,8 @@ const ScenarioCards = ({ onComplete }) => {
   const [decisionTimes, setDecisionTimes] = useState([]);
   const [lastTimestamp, setLastTimestamp] = useState(null);
 
-  const current = SCENARIOS[currentIndex];
-  const total = SCENARIOS.length;
+  const current = cards[currentIndex];
+  const total = cards.length;
   const progress = Math.round((currentIndex / total) * 100);
 
   const handleAnswer = useCallback((value) => {
