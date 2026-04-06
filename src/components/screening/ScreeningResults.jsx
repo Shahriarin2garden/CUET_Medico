@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import {
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
   RadialBarChart, RadialBar,
@@ -38,6 +39,54 @@ function computeOverallRisk(scores) {
   if (composite <= 0.50) return { level: 'Moderate', color: RISK_COLORS.Moderate, pct: Math.round(composite * 100) };
   if (composite <= 0.75) return { level: 'High', color: RISK_COLORS.High, pct: Math.round(composite * 100) };
   return { level: 'Critical', color: RISK_COLORS.Critical, pct: Math.round(composite * 100) };
+}
+
+function generateVerdictInsights(level) {
+  switch (level) {
+    case 'Low':
+      return {
+        suggestions: [
+          'Maintain balanced sleep routines.',
+          'Practice mindfulness or meditation.',
+          'Stay connected with friends and family.',
+        ],
+        appointmentNeeded: false,
+        explanation: 'Your responses show a healthy emotional baseline. No clinical appointment is required right now, but our resources are always open for personal growth.',
+      };
+    case 'Moderate':
+      return {
+        suggestions: [
+          'Consider journaling your thoughts.',
+          'Try deep-breathing exercises.',
+          'Monitor your stress levels closely over the next week.',
+        ],
+        appointmentNeeded: true,
+        explanation: 'Your assessment indicates emerging signs of stress or anxiety. Speaking with a counselor now can help prevent these feelings from escalating.',
+      };
+    case 'High':
+      return {
+        suggestions: [
+          'Reach out to trusted family members or friends.',
+          'Scale back on non-essential commitments to allow recovery.',
+          'Use cognitive defusion techniques.',
+        ],
+        appointmentNeeded: true,
+        explanation: 'Your results show significant distress across multiple areas. A professional can provide effective coping strategies tailored to your situation.',
+      };
+    case 'Critical':
+      return {
+        suggestions: [
+          'Do not isolate yourself.',
+          'Reach out to a support network immediately.',
+          'Use campus distress helplines if you feel overwhelmed.',
+        ],
+        appointmentNeeded: true,
+        isUrgent: true,
+        explanation: 'Your responses indicate a severe emotional burden or crisis. It is highly important that you consult a mental health professional as soon as possible for dedicated support.',
+      };
+    default:
+      return { suggestions: [], appointmentNeeded: false, explanation: '' };
+  }
 }
 
 const ScreeningResults = ({ data, onSave, userInfo, onUniversityIdChange }) => {
@@ -224,17 +273,57 @@ const ScreeningResults = ({ data, onSave, userInfo, onUniversityIdChange }) => {
         </div>
       </div>
 
-      {/* Overall Risk Badge */}
-      <div className="bg-white rounded-2xl shadow-sm p-6 mb-6 text-center">
-        <p className="text-sm text-gray-500 mb-2">Overall Risk Assessment</p>
-        <div
-          className="inline-flex items-center gap-3 px-6 py-3 rounded-full text-white font-bold text-xl"
-          style={{ backgroundColor: risk.color }}
-        >
-          {risk.level === 'Low' ? '😊' : risk.level === 'Moderate' ? '🙂' : risk.level === 'High' ? '😐' : '😔'}
-          <span>{risk.level} Risk</span>
+      {/* Overall Risk Badge & Verdict Insights */}
+      <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
+        <div className="grid md:grid-cols-2 gap-8 items-center">
+          <div className="text-center md:border-r md:border-slate-200">
+            <p className="text-sm text-gray-500 mb-2">Overall Risk Assessment</p>
+            <div
+              className="inline-flex items-center gap-3 px-6 py-3 rounded-full text-white font-bold text-2xl mb-2 shadow-sm"
+              style={{ backgroundColor: risk.color }}
+            >
+              {risk.level === 'Low' ? '😊' : risk.level === 'Moderate' ? '🙂' : risk.level === 'High' ? '😐' : '😔'}
+              <span>{risk.level} Risk</span>
+            </div>
+            <p className="text-xs text-gray-400 mt-2">Composite score: {risk.pct}%</p>
+          </div>
+
+          <div className="text-left">
+            <h3 className="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
+              💡 Actionable Insights
+            </h3>
+            <ul className="text-sm text-gray-600 mb-4 space-y-1.5 list-disc pl-4">
+              {generateVerdictInsights(risk.level).suggestions.map((s, i) => (
+                <li key={i}>{s}</li>
+              ))}
+            </ul>
+
+            <div className={`p-4 rounded-xl text-sm border-l-4 ${
+              generateVerdictInsights(risk.level).isUrgent
+                ? 'bg-red-50 border-red-500 text-red-800'
+                : generateVerdictInsights(risk.level).appointmentNeeded
+                ? 'bg-amber-50 border-amber-500 text-amber-800'
+                : 'bg-green-50 border-green-500 text-green-800'
+            }`}>
+              <p className="font-semibold mb-1">
+                Recommendation: {generateVerdictInsights(risk.level).appointmentNeeded ? 'Appointment Suggested' : 'Self-Care Mode'}
+              </p>
+              <p className="mb-3 opacity-90">{generateVerdictInsights(risk.level).explanation}</p>
+              {generateVerdictInsights(risk.level).appointmentNeeded && (
+                <Link
+                  to="/appointments"
+                  className={`inline-block px-4 py-2 font-medium rounded-lg shadow-sm transition ${
+                    generateVerdictInsights(risk.level).isUrgent
+                      ? 'bg-red-600 hover:bg-red-700 text-white'
+                      : 'bg-amber-600 hover:bg-amber-700 text-white'
+                  }`}
+                >
+                  Book Appointment Now
+                </Link>
+              )}
+            </div>
+          </div>
         </div>
-        <p className="text-xs text-gray-400 mt-2">Composite score: {risk.pct}%</p>
       </div>
 
       {/* Gauge + Radar Row */}
