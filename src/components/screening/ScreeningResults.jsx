@@ -14,14 +14,25 @@ import { useToast } from '../ui/ToastProvider';
 import { exportScreeningToPdf } from './ScreeningPDFExport';
 
 function computeOverallRisk(scores) {
-  // Weighted composite: quiz(40%), words(20%), color(15%), reaction(12.5%), memory(12.5%)
-  const quizNorm = scores.quizPct != null ? scores.quizPct / 100 : 0.5; // 0-1 where 1 is worst
+  // Weighted composite across all 10 activities
+  // Original 5: quiz(20%), words(10%), color(8%), reaction(6%), memory(6%) = 50%
+  // New 5: scenarios(12%), sorter(8%), mixer(8%), catcher(6%), pathfinder(6%) = 40%
+  // Remaining 10% shared buffer
+  const quizNorm = scores.quizPct != null ? scores.quizPct / 100 : 0.5;
   const wordNorm = scores.emotionWordScore != null ? scores.emotionWordScore / 10 : 0.5;
   const colorNorm = scores.moodColorScore != null ? scores.moodColorScore / 10 : 0.5;
   const reactionNorm = scores.reactionScore != null ? Math.max(0, (2 - scores.reactionScore) / 5) : 0.3;
   const memoryNorm = scores.memoryScore != null ? Math.max(0, (3 - scores.memoryScore) / 6) : 0.3;
+  // New game norms (all 0-10 scores mapped to 0-1)
+  const scenarioNorm = scores.scenarioPct != null ? scores.scenarioPct / 100 : 0.5;
+  const sorterNorm = scores.sorterScore != null ? scores.sorterScore / 10 : 0.5;
+  const mixerNorm = scores.mixerScore != null ? scores.mixerScore / 10 : 0.5;
+  const catcherNorm = scores.catcherScore != null ? scores.catcherScore / 10 : 0.5;
+  const pathfinderNorm = scores.pathfinderScore != null ? scores.pathfinderScore / 10 : 0.5;
 
-  const composite = quizNorm * 0.4 + wordNorm * 0.2 + colorNorm * 0.15 + reactionNorm * 0.125 + memoryNorm * 0.125;
+  const composite =
+    quizNorm * 0.20 + wordNorm * 0.10 + colorNorm * 0.08 + reactionNorm * 0.06 + memoryNorm * 0.06 +
+    scenarioNorm * 0.12 + sorterNorm * 0.10 + mixerNorm * 0.08 + catcherNorm * 0.10 + pathfinderNorm * 0.10;
 
   if (composite <= 0.25) return { level: 'Low', color: RISK_COLORS.Low, pct: Math.round(composite * 100) };
   if (composite <= 0.50) return { level: 'Moderate', color: RISK_COLORS.Moderate, pct: Math.round(composite * 100) };
@@ -39,7 +50,7 @@ const ScreeningResults = ({ data, onSave, userInfo, onUniversityIdChange }) => {
   const reportRef = useRef(null);
   const { showToast } = useToast();
 
-  const { moodColor, emotionWords, reactionTime, memoryPattern, quiz } = data;
+  const { moodColor, moodMixer, emotionWords, feelingSorter, reactionTime, focusCatcher, memoryPattern, pathfinder, quiz, scenarioCards } = data;
 
   // Request ML analysis for free text
   useEffect(() => {
@@ -63,6 +74,11 @@ const ScreeningResults = ({ data, onSave, userInfo, onUniversityIdChange }) => {
     moodColorScore: moodColor?.score,
     reactionScore: reactionTime?.score,
     memoryScore: memoryPattern?.score,
+    scenarioPct: scenarioCards?.pct,
+    sorterScore: feelingSorter?.score,
+    mixerScore: moodMixer?.score,
+    catcherScore: focusCatcher?.score,
+    pathfinderScore: pathfinder?.score,
   });
 
   // Radar data: normalize all scores to 0-100 (100 = worst)
@@ -78,10 +94,15 @@ const ScreeningResults = ({ data, onSave, userInfo, onUniversityIdChange }) => {
   // Activity scores bar
   const activityData = [
     { name: 'Color', score: moodColor?.score || 0, fill: '#8b5cf6' },
+    { name: 'Mixer', score: moodMixer?.score || 0, fill: '#a855f7' },
     { name: 'Words', score: emotionWords?.score || 0, fill: '#3b82f6' },
+    { name: 'Sorter', score: feelingSorter?.score || 0, fill: '#06b6d4' },
     { name: 'Reaction', score: Math.max(0, 5 - (reactionTime?.score || 0)), fill: '#10b981' },
+    { name: 'Catcher', score: focusCatcher?.score || 0, fill: '#22c55e' },
     { name: 'Memory', score: Math.max(0, 5 - (memoryPattern?.score || 0)), fill: '#f59e0b' },
+    { name: 'Path', score: pathfinder?.score || 0, fill: '#06b6d4' },
     { name: 'Quiz', score: Math.round((quiz?.pct || 0) / 10), fill: '#ef4444' },
+    { name: 'Scenarios', score: Math.round((scenarioCards?.pct || 0) / 10), fill: '#ec4899' },
   ];
 
   const handleSave = async () => {
@@ -89,14 +110,19 @@ const ScreeningResults = ({ data, onSave, userInfo, onUniversityIdChange }) => {
     
     const screeningPayload = {
       moodColorScore: moodColor,
+      moodMixerScore: moodMixer,
       emotionWordScore: emotionWords,
+      feelingSorterScore: feelingSorter,
       reactionTimeScore: reactionTime,
+      focusCatcherScore: focusCatcher,
       memoryPatternScore: memoryPattern,
+      pathfinderScore: pathfinder,
       quizScore: quiz?.quizScore,
       quizScoreMax: quiz?.quizScoreMax,
       severityLevel: quiz?.severityLevel,
       categoryScores: quiz?.categoryScores,
       freeText: quiz?.freeText,
+      scenarioCardsScore: scenarioCards,
       mlPrediction: mlResult?.prediction,
       mlConfidence: mlResult?.confidence,
       mlExplanation: mlResult?.explanation,
@@ -270,8 +296,8 @@ const ScreeningResults = ({ data, onSave, userInfo, onUniversityIdChange }) => {
         </ResponsiveContainer>
       </div>
 
-      {/* Activities Detail Row */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      {/* Activities Detail Row — Original */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         {/* Color */}
         <div className="bg-white rounded-xl shadow-sm p-4">
           <h4 className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1">
@@ -321,6 +347,52 @@ const ScreeningResults = ({ data, onSave, userInfo, onUniversityIdChange }) => {
           <p className="text-xs text-center text-gray-400">
             Errors: {memoryPattern?.errors} | Hesitation: {memoryPattern?.avgHesitation}ms
           </p>
+        </div>
+      </div>
+
+      {/* Activities Detail Row — New Games */}
+      <div className="bg-white rounded-2xl shadow-sm p-5 mb-6">
+        <h3 className="text-sm font-semibold text-gray-700 mb-3">🎮 Interactive Game Activities</h3>
+        <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-4">
+          {/* Mood Mixer */}
+          <div className="bg-purple-50 rounded-xl p-3 text-center">
+            <p className="text-lg">🧪</p>
+            <p className="text-xs font-semibold text-gray-600">Mood Mixer</p>
+            <p className="text-sm font-bold text-purple-600 mt-1">{moodMixer?.drops?.length || 0} drops</p>
+            <p className="text-[10px] text-gray-400">Score: {moodMixer?.score ?? 'N/A'}/10</p>
+          </div>
+
+          {/* Feeling Sorter */}
+          <div className="bg-blue-50 rounded-xl p-3 text-center">
+            <p className="text-lg">🎒</p>
+            <p className="text-xs font-semibold text-gray-600">Feeling Sorter</p>
+            <p className="text-sm font-bold text-blue-600 mt-1">{feelingSorter?.backpackCount || 0} kept</p>
+            <p className="text-[10px] text-gray-400">Avg: {feelingSorter?.avgDecisionTime || 0}ms</p>
+          </div>
+
+          {/* Focus Catcher */}
+          <div className="bg-green-50 rounded-xl p-3 text-center">
+            <p className="text-lg">🎯</p>
+            <p className="text-xs font-semibold text-gray-600">Focus Catcher</p>
+            <p className="text-sm font-bold text-green-600 mt-1">{focusCatcher?.goodCaught || 0} caught</p>
+            <p className="text-[10px] text-gray-400">Distractions: {focusCatcher?.badCaught || 0}</p>
+          </div>
+
+          {/* Pathfinder */}
+          <div className="bg-cyan-50 rounded-xl p-3 text-center">
+            <p className="text-lg">🗺️</p>
+            <p className="text-xs font-semibold text-gray-600">Pathfinder</p>
+            <p className="text-sm font-bold text-cyan-600 mt-1">Lvl {pathfinder?.maxLevel || 0}</p>
+            <p className="text-[10px] text-gray-400">Errors: {pathfinder?.totalErrors || 0}</p>
+          </div>
+
+          {/* Scenario Cards */}
+          <div className="bg-indigo-50 rounded-xl p-3 text-center">
+            <p className="text-lg">🃏</p>
+            <p className="text-xs font-semibold text-gray-600">Scenario Cards</p>
+            <p className="text-sm font-bold text-indigo-600 mt-1">{scenarioCards?.severityLevel || 'N/A'}</p>
+            <p className="text-[10px] text-gray-400">Score: {scenarioCards?.quizScore || 0}/{scenarioCards?.quizScoreMax || 60}</p>
+          </div>
         </div>
       </div>
 
